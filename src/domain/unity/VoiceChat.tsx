@@ -15,6 +15,7 @@ import {
   ModalContent,
   ModalHeader,
   ModalFooter,
+  Select,
 } from "@chakra-ui/react";
 
 interface AudioContextRef {
@@ -40,7 +41,7 @@ const VoiceChat: React.FC<VoiceChatProps> = ({ roomId: initialRoomId }) => {
   >("idle");
   const [showIncomingCall, setShowIncomingCall] = useState<boolean>(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
-
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("ko");
   // Refs
   const localAudioRef = useRef<HTMLAudioElement>(null);
   const remoteAudioRef = useRef<HTMLAudioElement>(null);
@@ -54,6 +55,13 @@ const VoiceChat: React.FC<VoiceChatProps> = ({ roomId: initialRoomId }) => {
   const recordingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null
   );
+
+  const languages: any[] = [
+    { code: "ko", label: "한국어" },
+    { code: "en", label: "English" },
+    { code: "zh", label: "中文" },
+    { code: "ja", label: "日本語" },
+  ];
 
   // WebRTC 연결 설정
   const createPeerConnection = (): RTCPeerConnection => {
@@ -578,6 +586,18 @@ const VoiceChat: React.FC<VoiceChatProps> = ({ roomId: initialRoomId }) => {
     return Math.max(0, Math.min(1, normalized)) * 100;
   };
 
+  const handleLanguageChange = (newLanguage: string): void => {
+    setSelectedLanguage(newLanguage);
+    console.log("Language changed to:", newLanguage);
+
+    if (isRecording) {
+      stopRecording();
+      setTimeout(() => {
+        startRecording();
+      }, 100);
+    }
+  };
+
   return (
     <Box
       w="20rem"
@@ -683,22 +703,22 @@ const VoiceChat: React.FC<VoiceChatProps> = ({ roomId: initialRoomId }) => {
                     colorScheme="green"
                   />
                 </Box>
-                {/* <Box w="full">
+                <Box w="full">
                   <Text fontSize="xs" mb={1}>
                     음성 인식 언어
                   </Text>
-                 
-                </Box> <Select
-                    value={selectedLanguage}
-                    onChange={(e) => handleLanguageChange(e.target.value)}
-                    size="sm"
-                  >
-                    {languages.map((lang) => (
-                      <option key={lang.code} value={lang.code}>
-                        {lang.label}
-                      </option>
-                    ))}
-                  </Select> */}
+                </Box>{" "}
+                <Select
+                  value={selectedLanguage}
+                  onChange={(e) => handleLanguageChange(e.target.value)}
+                  size="sm"
+                >
+                  {languages.map((lang) => (
+                    <option key={lang.code} value={lang.code}>
+                      {lang.label}
+                    </option>
+                  ))}
+                </Select>
                 <VStack spacing={3} w="full">
                   <Box w="full">
                     <Flex justifyContent="space-between" mb={1}>
