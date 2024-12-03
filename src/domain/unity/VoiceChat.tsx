@@ -117,7 +117,7 @@ const VoiceChat: React.FC<VoiceChatProps> = ({ roomId: initialRoomId }) => {
     const formData = new FormData();
     formData.append("model", "whisper-1");
     formData.append("file", audioBlob, "audio.webm");
-
+    formData.append("language", selectedLanguage);
     try {
       const response = await fetch(
         "https://api.openai.com/v1/audio/transcriptions",
